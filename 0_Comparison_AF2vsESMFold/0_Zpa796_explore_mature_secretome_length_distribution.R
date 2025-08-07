@@ -8,7 +8,6 @@ secretome_data <- read.csv("Zpa796_secretome_metadata.tsv", sep="\t")
 #str(secretome_data)
 colnames(secretome_data)
 
-
 categorize_length <- function(length) {
   if (length <= 100) {
     return('1-100')
