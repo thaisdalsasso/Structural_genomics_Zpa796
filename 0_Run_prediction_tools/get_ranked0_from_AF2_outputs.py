@@ -1,6 +1,7 @@
 import os
 import shutil
 
+# Extract AF2 best model (ranked_0.pdb) for each protein
 
 # Directory with AF2 results
 source_folder = "./Zpa796_AF2"

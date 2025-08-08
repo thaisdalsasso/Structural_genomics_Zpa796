@@ -1,4 +1,4 @@
-# Structural_genomics_of_Zpasserinii_Zpa796
+# Structural genomics of Z. passerinii Zpa796
 
 
 Contains scripts used in the manuscript 
