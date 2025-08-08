@@ -20,7 +20,7 @@ OUTPUT_BASE="./${species}"  # Base directory for output
 
 
 # Iterate over each range 
-# In this step, protein structures were copied and stored in folders according to their protein lenth categories
+# Prior to this step, protein structures were copied and stored in folders according to their protein lenth categories
 for range in "1-100" "101-200" "201-300" "301-400" "401-500" "501-600" "601-700" "701-800" "801-900" "901-1000" "1001_above"; do
     alpha_range_dir="${ALPHAFOLD_BASE}/${range}"
     esm_range_dir="${ESMFOLD_BASE}/${range}"
