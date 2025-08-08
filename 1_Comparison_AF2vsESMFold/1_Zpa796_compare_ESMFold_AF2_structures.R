@@ -8,10 +8,12 @@ library(multcompView)
 library(extrafont)
 
 
-df <- read.delim("Zpa796_secretome_metadata.tsv")
-
 font_import() 
 loadfonts(device = "pdf") 
+
+
+
+df <- read.delim("Zpa796_secretome_metadata.tsv")
 
 ##################################################################################################
 ##################################################################################################

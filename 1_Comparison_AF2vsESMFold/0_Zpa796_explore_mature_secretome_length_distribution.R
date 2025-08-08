@@ -4,6 +4,7 @@ library(extrafont)
 font_import() 
 loadfonts(device = "pdf") 
 
+
 secretome_data <- read.csv("Zpa796_secretome_metadata.tsv", sep="\t")
 #str(secretome_data)
 colnames(secretome_data)
