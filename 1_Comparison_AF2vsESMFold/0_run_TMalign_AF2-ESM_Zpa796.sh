@@ -11,6 +11,8 @@
 # Load modules
 module load gcc12-env/12.3.0
 
+######################################
+
 # Define species name and directory paths
 species="Zpa796"
 ALPHAFOLD_BASE="/gxfs_work/cau/sunbo511/alphafold/${species}_AF2"
