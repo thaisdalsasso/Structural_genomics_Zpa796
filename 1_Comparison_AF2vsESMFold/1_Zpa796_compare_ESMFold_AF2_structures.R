@@ -12,7 +12,6 @@ font_import()
 loadfonts(device = "pdf") 
 
 
-
 df <- read.delim("Zpa796_secretome_metadata.tsv")
 
 ##################################################################################################
