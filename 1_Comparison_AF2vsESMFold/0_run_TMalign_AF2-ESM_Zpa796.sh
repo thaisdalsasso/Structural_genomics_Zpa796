@@ -13,14 +13,14 @@ module load gcc12-env/12.3.0
 
 # Define species name and directory paths
 species="Zpa796"
-ALPHAFOLD_BASE="/gxfs_work/cau/sunbo511/alphafold/${species}"
-ESMFOLD_BASE="/gxfs_work/cau/sunbo511/esmfold/${species}"
+ALPHAFOLD_BASE="/gxfs_work/cau/sunbo511/alphafold/${species}_AF2"
+ESMFOLD_BASE="/gxfs_work/cau/sunbo511/esmfold/${species}_ESMFold"
 PROTEIN_IDS_FILE="/gxfs_home/cau/sunbo511/data/References/mature_secretomes/Zpa796.mature_secretome.ids"
 OUTPUT_BASE="./${species}"  # Base directory for output
 
 
 # Iterate over each range 
-# In this step, protein structures were copied and stored in folders according to their protein lenth categories
+# Prior to this step, protein structures were copied and stored in folders according to their protein lenth categories
 for range in "1-100" "101-200" "201-300" "301-400" "401-500" "501-600" "601-700" "701-800" "801-900" "901-1000" "1001_above"; do
     alpha_range_dir="${ALPHAFOLD_BASE}/${range}"
     esm_range_dir="${ESMFOLD_BASE}/${range}"
