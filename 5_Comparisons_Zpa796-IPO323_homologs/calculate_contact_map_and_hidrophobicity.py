@@ -8,7 +8,7 @@ from matplotlib.colors import LinearSegmentedColormap
 
 mpl.rcParams['font.family'] = 'Arial'
 
-# Define custom colors for annotations
+# Define colors for annotations
 hydro_cmap = LinearSegmentedColormap.from_list("hydro", ["darkcyan", "white", "darkgoldenrod"])
 
 # Hydrophobicity 
