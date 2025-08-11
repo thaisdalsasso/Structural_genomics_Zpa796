@@ -1,4 +1,3 @@
-# Load necessary libraries
 library(dplyr)
 library(ggplot2)
 library(readr)
@@ -9,7 +8,6 @@ library(stringr)
 tpm_counts <- read_delim('/Users/dalsasso/Desktop/Posdoc/CAU/People/Leon_Hofmann/Zpa796/tpm_counts_Zpa796_invitro_inplanta_DEseq2_final.csv', delim = "\t")
 network_node_info <- read_delim('/Users/dalsasso/Desktop/Posdoc/CAU/annotations/Zpa796_secretome_metadata.tsv', delim = "\t")
 
-# Preprocess names
 tpm_counts <- tpm_counts %>%
   mutate(Gene_ID = gsub("\\.t1$", "", Gene_ID))
 
@@ -64,7 +62,6 @@ create_plots_for_subgraph <- function(subgraph_id) {
   peak_time <- subgraph_average_counts %>%
     filter(average_count == max(average_count, na.rm = TRUE)) %>%
     pull(Time_Point)
-  
 
   peak_time_points <<- rbind(peak_time_points, data.frame(Subgraph = subgraph_id, Peak_Time = peak_time, stringsAsFactors = FALSE))
   
@@ -74,7 +71,6 @@ create_plots_for_subgraph <- function(subgraph_id) {
   subgraph_average_counts <- subgraph_average_counts %>%
     mutate(Time_Point = factor(Time_Point, levels = c("axenic", "4", "7", "10")))
   
-  # Log2 transformation
   gene_average_counts <- gene_average_counts %>%
     mutate(log2_average_count = log2(average_count + 1)) # Avoid log2(0)
   
@@ -83,10 +79,10 @@ create_plots_for_subgraph <- function(subgraph_id) {
   
   # Plot
   log2meanTPM_plot <- ggplot() +
-    # Plot individual gene averages as grey lines
+    # Plot individual gene averages 
     geom_line(data = gene_average_counts, aes(x = Time_Point, y = log2_average_count, group = `Protein ID`), color = "grey") +
     geom_point(data = gene_average_counts, aes(x = Time_Point, y = log2_average_count, group = `Protein ID`), color = "grey") +
-    # Plot overall subgraph average as a red line
+    # Plot overall subgraph average 
     geom_line(data = subgraph_average_counts, aes(x = Time_Point, y = log2_average_count, group = 1), color = "red", size = 2) +
     geom_point(data = subgraph_average_counts, aes(x = Time_Point, y = log2_average_count), color = "red", size = 2.5) +
     labs(title = paste("Subgraph", subgraph_id), x = "Time Point", y = "Log2 Mean TPM") +
