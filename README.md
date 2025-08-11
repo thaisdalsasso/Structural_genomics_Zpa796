@@ -1,4 +1,4 @@
-# Structural genomics of Z. passerinii
+# Structural genomics of Z. passerinii Zpa796
 
 
 Contains code used in the manuscript 
