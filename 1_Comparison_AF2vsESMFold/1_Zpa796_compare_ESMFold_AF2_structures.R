@@ -112,21 +112,20 @@ df_melted_length$Method <- factor(df_melted_length$Method,
                                   levels = c("ESMFold", "AlphaFold2"),
                                   labels = c("ESMFold", "AlphaFold2"))
 
-# Plotting boxplots side by side for each length category 
+# Plotting boxplots side by side 
 plot_pLDDT_by_length <- ggplot(df_melted_length, aes(x = Length_Category, y = pLDDT)) +
   geom_boxplot(
     aes(fill = Method, color = Method), # Set fill and color based on Method
     position = position_dodge(0.8),
-    outlier.colour = NA,  # Hide the default outliers
-    alpha = 0.4  # Set transparency for the boxplot fill
+    outlier.colour = NA,  
+    alpha = 0.4  
   ) +
-  scale_fill_manual(values = colors) + # Apply custom fill colors
-  scale_color_manual(values = colors) + # Apply custom outline colors
+  scale_fill_manual(values = colors) + # Apply custom outline colors
   theme_classic() +
   labs(title = "",
        x = "Mature protein length", y = "pLDDT") +
   geom_point(
-    aes(color = Method), # Add the outliers manually with matching color
+    aes(color = Method), 
     position = position_dodge(0.8),
     alpha = 0.4,
     shape = 16 #solid circle
@@ -203,7 +202,7 @@ for (length_category in names(pLDDT_comparisons)) {
 
 y_position <- 100 
 
-# Annotate plot_pLDDT_by_length with significance data
+# Annotate plot_pLDDT_by_length
 plot_pLDDT_by_length <- plot_pLDDT_by_length +
   geom_text(data = significance_data, aes(x = Length_Category, y = y_position, label = Significance), position = position_dodge(width = 0.75), size = 6, vjust = 0)
 
@@ -276,7 +275,7 @@ plot_TMscore_by_length <- ggplot(df_melted_length, aes(x = Length_Category, y = 
     color = "grey10", 
     position = position_dodge(0.8),
     alpha = 0.4,
-    shape = 16  # a solid circle
+    shape = 16  
   ) +
   theme(
     text = element_text(family = "Arial"),
@@ -333,8 +332,6 @@ for (length_category in levels(df_melted_length$Length_Category)) {
 plot_TMscore_by_length
 
 
-#########################################################################################
-# Check plots and save them
 plot_mean_pLDDT
 plot_pLDDT_by_length
 plot_mean_TMscore
@@ -354,7 +351,6 @@ ggsave("Zpa796_AF2-ESMFdold_plot_TMscore_by_length.pdf", plot = plot_TMscore_by_
 library(ggplot2)
 library(plotly)
 
-# Load the data and define columns
 data <- df
 print(colnames(data))
 
@@ -374,7 +370,6 @@ data$Method <- ifelse(data[[alphaFold_col]] > 0 & data[[esmFold_col]] > 0, "Both
 
 print(unique(data$Method))
 
-# Filter out rows where both pLDDT values are zero (i.e., Source is "None")
 data <- data[data$Method != "None", ]
 
 # Filter data for "Both" methods
@@ -404,7 +399,6 @@ if (shapiro_esmFold$p.value > 0.05 & shapiro_alphaFold$p.value > 0.05) {
   loess_fit <- loess(data_both[[alphaFold_col]] ~ data_both[[esmFold_col]], span = 0.5)
   poly_fit <- lm(loess_fit$fitted ~ poly(data_both[[esmFold_col]], 2, raw = TRUE))  # Polynomial fit (degree 2)
   
-  # Extract coefficients of the polynomial
   poly_coeff <- coef(poly_fit)
   lm_equation <- paste0("y = ", round(poly_coeff[1], 2), 
                         " + ", round(poly_coeff[2], 2), "x",
@@ -419,10 +413,9 @@ p_value_both <- format.pval(correlation_test_both$p.value, digits = 2)
 print(correlation_value_both)
 print(p_value_both)
 
-# Define colors
 colors <- c("ESMFold" = "#2F79B5", "AlphaFold2" = "#C13639", "Both" = "black")
 
-# Create scatter plot
+# Scatter plot
 scatter_plot_pLDDT <- ggplot(data, aes_string(x = esmFold_col, y = alphaFold_col, color = "Method", text = protein_id_col)) +
   geom_point(size = 3.5, alpha = 0.4, stroke = 0.5) +
   scale_color_manual(values = colors) +
@@ -454,7 +447,6 @@ scatter_plot_pLDDT
 # Interactive plot
 #ggplotly(scatter_plot_pLDDT, tooltip = c("x", "y", "text"))
 
-# Save the plot
 ggsave("Zpa796_AF2-ESMFold_scatterplot_pLDDT.pdf", plot = scatter_plot_pLDDT, device = cairo_pdf, width = 8, height = 8)
 
 
@@ -496,14 +488,12 @@ df$Length_Category <- cut(df$`Protein.length...AA.`,
                           breaks = c(0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, Inf),
                           labels = c("1-100", "101-200", "201-300", "301-400", "401-500", "501-600", "601-700", "701-800", "801-900", "901-1000", ">1000"))
 
-# Melting the dataframe for plotting by protein length
 df_melted_length <- df %>%
   select(Protein.ID, `RMSD.AF2.vs.ESMFold.`, Length_Category) %>%
   pivot_longer(cols = `RMSD.AF2.vs.ESMFold.`, names_to = "Method", values_to = "RMSD") %>%
   mutate(Method = "RMSD") 
 
 df_melted_length$RMSD <- as.numeric(as.character(df_melted_length$RMSD))
-
 
 # Plotting boxplots for RMSDs by protein length category
 plot_RMSD_by_length <- ggplot(df_melted_length, aes(x = Length_Category, y = RMSD)) +
@@ -569,7 +559,6 @@ RMSD_letters_by_length
 
 y_position_rmsd <- max(df_melted_length$RMSD, na.rm = TRUE) + 0.15
 
-# Add letters to RMSD by length plot
 for (length_category in levels(df_melted_length$Length_Category)) {
   plot_RMSD_by_length <- plot_RMSD_by_length +
     annotate("text", x = which(levels(df_melted_length$Length_Category) == length_category), y = y_position_rmsd, label = RMSD_letters_by_length[length_category], size = 5, color = "black")
