@@ -100,8 +100,6 @@ print(f"Network statistics saved to {stats_output_file}")
 nx.set_node_attributes(G, {k: round(v, 3) for k, v in degree_centrality.items()}, 'degree_centrality')
 nx.set_node_attributes(G, {k: round(v, 3) for k, v in betweenness_centrality.items()}, 'betweenness_centrality')
 nx.set_node_attributes(G, {k: round(v, 3) for k, v in closeness_centrality.items()}, 'closeness_centrality')
-# nx.set_node_attributes(G, {k: round(v, 3) for k, v in eigenvector_centrality.items()}, 'eigenvector_centrality')
-
 
 # Perform K-means clustering and add cluster labels
 k_range = range(1, 21)
