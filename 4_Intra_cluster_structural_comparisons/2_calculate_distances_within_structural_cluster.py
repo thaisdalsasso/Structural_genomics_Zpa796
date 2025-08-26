@@ -51,7 +51,7 @@ def calculate_secondary_structure_dssp(structure, pdb_file_path):
     sec_structures = []
     
     for residue in dssp:
-        ss = residue[2]  # Secondary structure column in DSSP
+        ss = residue[2]
         if ss == 'H':
             sec_structures.append('a-helix')
         elif ss == 'E':
@@ -81,7 +81,7 @@ def get_disulfide_bonds(structure, chain_id):
             if abs(cys1.id[1] - cys2.id[1]) == 1:  # Prevent consecutive cysteines from bonding
                 continue
 
-            distance = calculate_distance(cys1["CA"].get_coord(), cys2["CA"].get_coord())  # Use Cα
+            distance = calculate_distance(cys1["CA"].get_coord(), cys2["CA"].get_coord()) 
             if 2.0 <= distance <= 7.0:  # Valid disulfide bond range
                 candidate_bonds.append((cys1.id[1], cys2.id[1], distance))
 
@@ -90,7 +90,7 @@ def get_disulfide_bonds(structure, chain_id):
 
     for cys1, cys2, dist in candidate_bonds:
         if cys1 in assigned_cysteines or cys2 in assigned_cysteines:
-            continue  # Skip if one of them is already bonded
+            continue  
         disulfide_bonds.append((cys1, cys2))
         assigned_cysteines.add(cys1)
         assigned_cysteines.add(cys2)
@@ -142,12 +142,12 @@ def plot_difference_to_reference(distance_matrix, residue_indices, sorted_protei
 
     # Plot distances for all proteins
     for i, protein_name in enumerate(sorted_protein_names):
-        if protein_name != reference_protein_id:  # Skip the reference itself
+        if protein_name != reference_protein_id: 
             plt.plot(
                 residue_indices, 
                 differences[i, :], 
                 label=f'{protein_name}', 
-                color=color_palette[i % 15],  # Use the color dictionary cyclically
+                color=color_palette[i % 15],
                 alpha=0.8,  
                 linewidth=3.0
             )
