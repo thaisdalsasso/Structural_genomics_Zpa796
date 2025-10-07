@@ -18,7 +18,7 @@ species="Zpa796"
 ALPHAFOLD_BASE="/gxfs_work/cau/sunbo511/alphafold/${species}_AF2"
 ESMFOLD_BASE="/gxfs_work/cau/sunbo511/esmfold/${species}_ESMFold"
 PROTEIN_IDS_FILE="/gxfs_home/cau/sunbo511/data/References/mature_secretomes/Zpa796.mature_secretome.ids"
-OUTPUT_BASE="./${species}_AF2_vs_esmfold"  # Base directory for output
+OUTPUT_BASE="./${species}_AF2_vs_esmfold" 
 
 
 # Iterate over each range 
@@ -34,7 +34,7 @@ for range in "1-100" "101-200" "201-300" "301-400" "401-500" "501-600" "601-700"
 
     mkdir -p "$output_range_dir"
 
-    # Check if the range directories exist
+
     if [ -d "$alpha_range_dir" ] && [ -d "$esm_range_dir" ]; then
         while IFS= read -r protein_id; do
             alpha_file="${alpha_range_dir}/${protein_id}/ranked_0.pdb"
@@ -42,7 +42,7 @@ for range in "1-100" "101-200" "201-300" "301-400" "401-500" "501-600" "601-700"
 
             if [ -f "$alpha_file" ] && [ -f "$esm_file" ]; then
 
-        	# Perform TMalign and save the result in the output directory
+        	# TMalign 
                 output_file="${output_range_dir}/${protein_id}.tmalign.out"
                 matrix_file="${output_range_dir}/${protein_id}.TMmatrix.txt"
                 supplementary_files="${output_range_dir}/${protein_id}.TMsup"
