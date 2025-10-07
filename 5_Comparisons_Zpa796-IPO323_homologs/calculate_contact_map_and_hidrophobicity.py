@@ -6,9 +6,10 @@ from Bio.PDB import PDBParser
 import matplotlib as mpl
 from matplotlib.colors import LinearSegmentedColormap
 
+# Set Arial as the default font
 mpl.rcParams['font.family'] = 'Arial'
 
-# Define colors for annotations
+# Define custom colors for annotations
 hydro_cmap = LinearSegmentedColormap.from_list("hydro", ["darkcyan", "white", "darkgoldenrod"])
 
 # Hydrophobicity 
@@ -63,37 +64,39 @@ def plot_contact_map_with_annotations(distances, protein1, protein2,
         distances, cmap="rocket", cbar=False, vmax=10, ax=ax
     )
 
+    # Set scales for annotations
     hydro_vmin, hydro_vmax = -4, 4
 
+    # Invert y-axis so first residue is at the bottom
     ax.invert_yaxis()
     ax.set_xticks([])
     ax.set_yticks([])
 
-    ax.set_xlabel(f"{protein2}", fontsize=32, fontweight="bold", labelpad=10)
-    ax.set_ylabel(f"{protein1}", fontsize=32, fontweight="bold", labelpad=10)
+    # Axis labels 
+    ax.set_xlabel(f"{protein2}", fontsize=32, fontweight="bold", labelpad=60)
+    ax.set_ylabel(f"{protein1}", fontsize=32, fontweight="bold", labelpad=60)
 
     ax.text(-1, -6, "N", fontsize=28, ha="right", va="bottom", color="black")  # N on y-axis
-    #ax.text(-4, -4, "N", fontsize=28, ha="center", va="bottom", color="black")  # N on x-axis
-    ax.text(-1 , len(protein1_hydro) -3, "C", fontsize=28, ha="right", va="center", color="black")  # C on y-axis
-    ax.text(len(protein2_hydro) - 3, -6, "C", fontsize=28, ha="left", va="bottom", color="black")  # C on x-axis
+    #ax.text(-1, len(protein1_hydro) - 3, "C", fontsize=28, ha="right", va="center", color="black")  # C on y-axis
+    #ax.text(len(protein2_hydro) - 3, -6, "C", fontsize=28, ha="left", va="bottom", color="black")  # C on x-axis
 
-    # Hydrophobicity annotation
-    ax_hydro_x = fig.add_axes([ax.get_position().x0, ax.get_position().y1 + 0.01, ax.get_position().width, 0.05])
-    ax_hydro_y = fig.add_axes([ax.get_position().x1 + 0.01, ax.get_position().y0, 0.05, ax.get_position().height])
+    # Hydrophobicity annotation bars 
+    ax_hydro_x = fig.add_axes([ax.get_position().x0, ax.get_position().y0 - 0.06, ax.get_position().width, 0.05])
+    ax_hydro_y = fig.add_axes([ax.get_position().x0 - 0.06, ax.get_position().y0, 0.05, ax.get_position().height])
 
+    # y-axis annotation reversal
     ax_hydro_x.imshow(protein2_hydro.reshape(1, -1), aspect="auto", cmap=hydro_cmap, vmin=hydro_vmin, vmax=hydro_vmax)
     ax_hydro_y.imshow(protein1_hydro[::-1].reshape(-1, 1), aspect="auto", cmap=hydro_cmap, vmin=hydro_vmin, vmax=hydro_vmax)
 
     ax_hydro_x.set_xticks([]); ax_hydro_x.set_yticks([])
     ax_hydro_y.set_xticks([]); ax_hydro_y.set_yticks([])
 
-
     # Legends
     legend_fontsize = 34  
     ticks_fontsize = 28   
     
-    cbar_ax_hydro = fig.add_axes([ax.get_position().x0, ax.get_position().y0 - 0.12, ax.get_position().width, 0.03])
-    cbar_ax_dist = fig.add_axes([ax.get_position().x0, ax.get_position().y0 - 0.24, ax.get_position().width, 0.03])
+    cbar_ax_hydro = fig.add_axes([ax.get_position().x0, ax.get_position().y0 - 0.18, ax.get_position().width, 0.03])
+    cbar_ax_dist = fig.add_axes([ax.get_position().x0, ax.get_position().y0 - 0.30, ax.get_position().width, 0.03])
     
     cbar_hydro = fig.colorbar(plt.cm.ScalarMappable(cmap=hydro_cmap, norm=plt.Normalize(vmin=hydro_vmin, vmax=hydro_vmax)), cax=cbar_ax_hydro, orientation='horizontal')
     cbar_dist = fig.colorbar(plt.cm.ScalarMappable(cmap="rocket", norm=plt.Normalize(vmin=0, vmax=10)), cax=cbar_ax_dist, orientation='horizontal')
@@ -104,11 +107,12 @@ def plot_contact_map_with_annotations(distances, protein1, protein2,
     cbar_hydro.ax.tick_params(labelsize=ticks_fontsize)
     cbar_dist.ax.tick_params(labelsize=ticks_fontsize)
 
+    # Save plot
     plt.savefig(f"{base_name}_contact_map_annotated.png", dpi=300, bbox_inches="tight")
     #plt.show()
 
-# Input alignment and execute functions
-pdb_file = "jg9741.t1_vs_ZtIPO323_014270.1.pdb" # Pairwise alignment from TM-align
+# Run processing and plotting
+pdb_file = "jg9741.t1_vs_ZtIPO323_014270.1.pdb"  
 protein1, protein2, base_name = extract_protein_ids(pdb_file)
 
 coordinates, sequences = parse_coordinates_and_sequences(pdb_file)
@@ -120,4 +124,3 @@ hydro1 = compute_hydrophobicity(sequences[:split_index])
 hydro2 = compute_hydrophobicity(sequences[split_index:])
 
 plot_contact_map_with_annotations(compute_distance_matrix(coords1, coords2), protein1, protein2, hydro1, hydro2, base_name)
-
