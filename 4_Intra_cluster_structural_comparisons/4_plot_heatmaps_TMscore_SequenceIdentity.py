@@ -47,7 +47,7 @@ identity_df = pd.DataFrame(identity_matrix, index=sequence_ids, columns=sequence
 matrix_filename = f"{basename}_identity_matrix.csv"
 identity_df.to_csv(matrix_filename)
 
-# Generate heatmap
+# Identity heatmap
 mpl.rcParams['font.family'] = 'Arial'
 plt.figure(figsize=(10, 8))
 ax = sns.heatmap(
@@ -103,7 +103,7 @@ for i, query in enumerate(sequence_ids):
         else:
             tm_score_matrix[i, j] = tm_scores.get(query, {}).get(subject, np.nan)
 
-# Report missing data (off-diagonal only)
+# Report NaNs (off-diagonal only)
 off_diagonal_mask = ~np.eye(num_sequences, dtype=bool)
 missing_count = int(np.isnan(tm_score_matrix[off_diagonal_mask]).sum())
 total_comparisons = num_sequences * (num_sequences - 1)
