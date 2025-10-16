@@ -61,7 +61,7 @@ ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', fontsize=18)
 ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=18)
 cbar = ax.collections[0].colorbar
 cbar.ax.tick_params(labelsize=22)
-cbar.set_label('Sequence Identity (%)', fontsize=18)
+cbar.set_label('Sequence Identity (%)', fontsize=22)
 
 heatmap_filename = f"{basename}_identity_heatmap.png"
 plt.savefig(heatmap_filename, dpi=500, bbox_inches='tight')
