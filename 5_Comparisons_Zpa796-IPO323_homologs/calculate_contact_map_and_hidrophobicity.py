@@ -111,7 +111,7 @@ def plot_contact_map_with_annotations(distances, protein1, protein2,
     plt.savefig(f"{base_name}_contact_map_annotated.png", dpi=300, bbox_inches="tight")
     #plt.show()
 
-# Run processing and plotting
+# Define input and run functions
 pdb_file = "jg9741.t1_vs_ZtIPO323_014270.1.pdb"  # TM-align output
 protein1, protein2, base_name = extract_protein_ids(pdb_file)
 
