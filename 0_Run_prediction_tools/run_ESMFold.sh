@@ -18,7 +18,7 @@ module load miniconda3/23.5.2
 conda activate  my_esmfold_env
 
 # Directory containing protein fasta files (one sequence per file)
-fasta_dir="/gxfs_home/cau/sunbo511/data/References/mature_secretomes/Zpa796.mature_secretome-individual_fasta_files"
+fasta_dir="/data/References/mature_secretomes/Zpa796.mature_secretome-individual_fasta_files"
 
 # Directory for output files
 output_dir="./Zpa796_ESMFold"
