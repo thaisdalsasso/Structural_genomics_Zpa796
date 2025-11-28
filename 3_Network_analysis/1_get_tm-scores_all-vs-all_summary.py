@@ -2,10 +2,10 @@ import os
 import re
 
 # Folder containing the TM-align results
-folder_path = '/gxfs_work/cau/sunbo511/tmalign/Zpa796_all-vs-all'
+folder_path = '/tmalign/Zpa796_all-vs-all'
 
 # Output file for the summarized TM-scores
-output_file = '/gxfs_work/cau/sunbo511/tmalign/Zpa796_secretome_tm-scores_all-vs-all_summary.txt'
+output_file = '/tmalign/Zpa796_secretome_tm-scores_all-vs-all_summary.txt'
 
 
 # Extract protein names and TM-score from a file

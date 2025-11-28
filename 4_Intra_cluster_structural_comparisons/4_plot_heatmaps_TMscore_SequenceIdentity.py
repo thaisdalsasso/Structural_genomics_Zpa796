@@ -9,7 +9,7 @@ from Bio.Phylo.TreeConstruction import DistanceCalculator
 
 # Inputs
 alignment_file = "./fasta/G.12_mature_mafft-linsi.fasta"
-tm_score_file = "/Users/dalsasso/Desktop/Posdoc/CAU/structural_analysis/tm-align/Zpa796_secretome_tm-scores_all-vs-all_summary.txt"
+tm_score_file = "/CAU/structural_analysis/tm-align/Zpa796_secretome_tm-scores_all-vs-all_summary.txt"
 
 ##########################################
 # Load alignment

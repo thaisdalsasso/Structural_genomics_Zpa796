@@ -12,10 +12,10 @@
 module load gcc12-env/12.3.0
 
 # Directory containing PDB files for all-vs-all alignment
-pdb_dir="/gxfs_work/cau/sunbo511/alphafold/Zpa796_AF2bestmodels"
+pdb_dir="/alphafold/Zpa796_AF2bestmodels"
 
 # Directory for outputs
-work_dir="/gxfs_work/cau/sunbo511/tmalign/Zpa796_all-vs-all"
+work_dir="/tmalign/Zpa796_all-vs-all"
 
 mkdir -p "$work_dir"
 

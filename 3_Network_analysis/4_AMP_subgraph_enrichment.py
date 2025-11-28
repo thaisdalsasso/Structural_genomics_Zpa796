@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # File names:
 
-file_path = '/Users/dalsasso/Desktop/Posdoc/CAU/annotations/Zpa796_secretome_metadata.tsv'  
+file_path = '/CAU/annotations/Zpa796_secretome_metadata.tsv'  
 output_file_path = './AMP_subgraph_enrichment_results.tsv' 
 output_plot_file = './AMP_subgraph_enrichment_cluster_size.png'
 
