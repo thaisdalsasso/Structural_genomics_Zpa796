@@ -83,7 +83,7 @@ def extract_ecod_annotations(row, filename):
         })
 
 # Filepath for ECOD table
-ecod_table_path = '/Users/dalsasso/foldseek/info_databases/ECOD_v291/ecod.latest.domains.txt'
+ecod_table_path = '/foldseek/info_databases/ECOD_v291/ecod.latest.domains.txt'
 
 annotations = best_hits_data.apply(lambda row: extract_ecod_annotations(row, ecod_table_path), axis=1)
 best_hits_data = pd.concat([best_hits_data, annotations], axis=1)

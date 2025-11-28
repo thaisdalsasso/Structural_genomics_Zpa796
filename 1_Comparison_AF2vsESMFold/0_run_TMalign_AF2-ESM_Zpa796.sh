@@ -15,9 +15,9 @@ module load gcc12-env/12.3.0
 
 # Define species name and directory paths
 species="Zpa796"
-ALPHAFOLD_BASE="/gxfs_work/cau/sunbo511/alphafold/${species}_AF2"
-ESMFOLD_BASE="/gxfs_work/cau/sunbo511/esmfold/${species}_ESMFold"
-PROTEIN_IDS_FILE="/gxfs_home/cau/sunbo511/data/References/mature_secretomes/Zpa796.mature_secretome.ids"
+ALPHAFOLD_BASE="/alphafold/${species}_AF2"
+ESMFOLD_BASE="/esmfold/${species}_ESMFold"
+PROTEIN_IDS_FILE="/data/References/mature_secretomes/Zpa796.mature_secretome.ids"
 OUTPUT_BASE="./${species}_AF2_vs_esmfold" 
 
 

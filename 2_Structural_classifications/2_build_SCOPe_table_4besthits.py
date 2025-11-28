@@ -70,7 +70,7 @@ def extract_scope_annotations(row, filename):
         })
 
 # Filepath for SCOPe table
-scope_table_path = '/Users/dalsasso/foldseek/info_databases/SCOPe_v2.08/SCOPe_F40_2.08_descriptions/dir.cla.scope.2.08-stable.txt'
+scope_table_path = '/foldseek/info_databases/SCOPe_v2.08/SCOPe_F40_2.08_descriptions/dir.cla.scope.2.08-stable.txt'
 
 annotations = best_hits_data.apply(lambda row: extract_scope_annotations(row, scope_table_path), axis=1)
 best_hits_data = pd.concat([best_hits_data, annotations], axis=1)

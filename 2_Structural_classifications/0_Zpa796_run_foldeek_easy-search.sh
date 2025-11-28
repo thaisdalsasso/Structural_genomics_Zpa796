@@ -2,7 +2,7 @@
 
 
 PREFIX="Zpa796_AF2bestmodels"
-INPUT_DIR="/Users/dalsasso/Desktop/Posdoc/CAU/structural_analysis/af2/${PREFIX}/all"
+INPUT_DIR="/CAU/structural_analysis/af2/${PREFIX}/all"
 OUTPUT_DIR="./easy-search"
 
 mkdir -p "$OUTPUT_DIR"
