@@ -143,7 +143,7 @@ secreted_ids <- annot %>% filter(Secretome == "Yes") %>% pull(ID)
 effector_ids <- annot %>% filter(EffectorP3 != "Non-effector" & !is.na(EffectorP3)) %>% pull(ID)
 amp_ids <- annot %>% filter(AM.prediction..AF2.AMAPEC. == "Antimicrobial") %>% pull(ID)
 
-# Filter for proteins in structural clusters only
+# Filter for proteins in structural clusters
 cluster_data <- annot %>%
   filter(!is.na(Structural.subgraph) & grepl("G\\.", Structural.subgraph)) %>%
   select(ID, Structural.subgraph, Secretome, EffectorP3, AM.prediction..AF2.AMAPEC.) %>%
@@ -158,7 +158,7 @@ for (cn in intersect(num_cols, colnames(cluster_data))) {
   cluster_data[[cn]] <- suppressWarnings(as.numeric(as.character(cluster_data[[cn]])))
 }
 
-# Charge density
+# Calculate charge density
 if ("Length" %in% colnames(cluster_data) & "Net.Charge" %in% colnames(cluster_data)) {
   cluster_data$Charge.density <- ifelse(!is.na(cluster_data$Length) & cluster_data$Length > 0,
                                         cluster_data$Net.Charge / cluster_data$Length, NA_real_)
@@ -204,7 +204,7 @@ write.csv(cluster_stats, file.path(outdir, "cluster_statistics.csv"), row.names 
 
 # Categorize clusters by size
 
-# For scatter plots
+# For pairwise scatter plots
 large_clusters <- cluster_stats %>% filter(n_proteins >= 6) %>% pull(Structural.subgraph)
 small_clusters <- cluster_stats %>% filter(n_proteins < 6) %>% pull(Structural.subgraph)
 
@@ -212,7 +212,7 @@ cat("\nClusters with >=6 proteins:", length(large_clusters), "\n")
 cat("Clusters with <6 proteins:", length(small_clusters), "\n\n")
 
 # For statistical tests
-min_cluster_size <- 3  # Minimum proteins per cluster for statistical analysis
+min_cluster_size <- 3  
 clusters_for_stats <- cluster_stats %>% 
   filter(n_proteins >= min_cluster_size) %>% 
   pull(Structural.subgraph)
@@ -228,7 +228,7 @@ pct_proteins_in_filtered <- round(100 * n_proteins_in_filtered / nrow(cluster_da
 cat("Proteins in these clusters:", n_proteins_in_filtered, 
     "(", pct_proteins_in_filtered, "% of proteins in network)\n\n")
 
-# Filtered dataset for statistical analysis
+# Filtered dataset
 cluster_data_for_stats <- cluster_data %>%
   filter(Structural.subgraph %in% clusters_for_stats)
 
@@ -282,8 +282,6 @@ base_theme_violin <- theme_classic() +
 
 ###################################################################
 # Compare properties by protein groups
-
-cat("\n=== Running statistical tests by protein group ===\n")
 
 # Function for group statistics
 run_group_stats <- function(df, feature_col, feature_label, file_prefix, outdir) {
@@ -463,12 +461,12 @@ plot_charge_density
 plot_muH
 plot_hydro
 plot_surf_hydro
+
+                      
 ###################################################################
 # Scatter plots 
 
-cat("\n=== Creating scatter plots ===\n")
-
-# Mature protein entgh vs property
+# Mature protein lentgh vs property
 plot_data_1 <- cluster_data %>% filter(!is.na(Length) & !is.na(Net.Charge))
 p1 <- ggplot(plot_data_1, aes(x = Length, y = Net.Charge, color = Group, shape = Cluster_display)) +
   geom_point(size = 2.5, alpha = 0.7) +
@@ -541,7 +539,7 @@ ggsave(file.path(outdir, "length_vs_moment_by_cluster.pdf"),
 p3
 
 
-# Property vs property (color by Group, shape by cluster)
+# Property vs property (color by group, shape by cluster)
 
 # Net charge vs mean hydrophobicity
 plot_data_4 <- cluster_data %>% filter(!is.na(Net.Charge) & !is.na(Hydrophobicity))
@@ -588,7 +586,7 @@ ggsave(file.path(outdir, "charge_vs_surface_hydrophobicity_by_cluster.pdf"),
        plot = p4c, width = 12, height = 8, device = cairo_pdf)
 p4c
 
-# charge density vs surface hydrophobicity
+# Charge density vs surface hydrophobicity
 plot_data_4c_cd <- cluster_data %>% filter(!is.na(Charge.density) & !is.na(Surface_Hydrophobicity))
 p4c_cd <- ggplot(plot_data_4c_cd, aes(x = Charge.density, y = Surface_Hydrophobicity, color = Group, shape = Cluster_display)) +
   geom_point(size = 2.5, alpha = 0.7) +
@@ -697,8 +695,6 @@ p8
 ###################################################################
 # Boxplots for properties by structural clusters
 
-cat("\n=== Creating boxplots by cluster ===\n")
-
 run_cluster_stats <- function(df, feature_col, feature_label) {
   df_feat <- df %>% 
     dplyr::select(Structural.subgraph, value = dplyr::all_of(feature_col)) %>% 
@@ -713,7 +709,7 @@ run_cluster_stats <- function(df, feature_col, feature_label) {
   # Kruskal-Wallis test
   kw_result <- kruskal.test(value ~ Structural.subgraph, data = df_feat)
   
-  # Calculate effect size (Epsilon squared, ε²) for overall test
+  # Effect size (Epsilon squared, ε²) for overall test
   n <- nrow(df_feat)
   k <- n_distinct(df_feat$Structural.subgraph)
   H <- kw_result$statistic
@@ -820,64 +816,7 @@ make_cluster_boxplot <- function(df, feature_col, y_label, file_prefix, outdir,
           legend.position = "bottom",
           legend.text = element_text(size = 14))
   
-  #### Add title with statistics
-  ###if (!is.null(stats_result)) {
-  ###  kw_p <- stats_result$kw$p.value
-  ###  
-  ###  if (!is.null(stats_result$n_sig)) {
-  ###    n_clusters_in_stats <- length(clusters_in_stats)
-  ###    if (kw_p < 0.001) {
-  ###      title_text <- sprintf("Kruskal-Wallis: p < 0.001 | ε² = %.4f | %d/%d significant pairs (n=%d clusters with ≥%d proteins)",
-  ###                            stats_result$epsilon_squared,
-  ###                            stats_result$n_sig, stats_result$n_total, n_clusters_in_stats, min_cluster_size)
-  ###    } else {
-  ###      title_text <- sprintf("Kruskal-Wallis: p = %.4f | ε² = %.4f | %d/%d significant pairs (n=%d clusters with ≥%d proteins)",
-  ###                            kw_p, stats_result$epsilon_squared,
-  ###                            stats_result$n_sig, stats_result$n_total, n_clusters_in_stats, min_cluster_size)
-  ###    }
-  ###  } else {
-  ###    n_clusters_in_stats <- length(clusters_in_stats)
-  ###    if (kw_p < 0.001) {
-  ###      title_text <- sprintf("Kruskal-Wallis: p < 0.001 | ε² = %.4f (n=%d clusters with ≥%d proteins)",
-  ###                            stats_result$epsilon_squared,
-  ###                            n_clusters_in_stats, min_cluster_size)
-  ###    } else {
-  ###      title_text <- sprintf("Kruskal-Wallis: p = %.4f | ε² = %.4f (n=%d clusters with ≥%d proteins)",
-  ###                            kw_p, stats_result$epsilon_squared,
-  ###                            n_clusters_in_stats, min_cluster_size)
-  ###    }
-  ###  }
-  ###  
-  ###  p <- p + ggtitle(title_text) +
-  ###    theme(plot.title = element_text(size = 16, hjust = 0.5, face = "bold"))
-  ###  
-  ###  # Only add letters if available and meaningful
-  ###  if (!is.null(stats_result$letters)) {
-  ###    # Only add letters to clusters that were in the statistical analysis
-  ###    letter_pos <- df_plot %>%
-  ###      filter(Structural.subgraph %in% clusters_in_stats) %>%
-  ###      group_by(Structural.subgraph) %>%
-  ###      summarise(max_val = max(!!sym(feature_col), na.rm = TRUE), .groups = "drop") %>%
-  ###      left_join(stats_result$letters, by = c("Structural.subgraph" = "cluster"))
-  ###    
-  ###    # Only proceed if not all letters are the same
-  ###    if (n_distinct(letter_pos$letter) > 1) {
-  ###      global_max <- max(df_plot[[feature_col]], na.rm = TRUE)
-  ###      global_min <- min(df_plot[[feature_col]], na.rm = TRUE)
-  ###      y_range <- global_max - global_min
-  ###      y_position_letters <- global_max + (y_range * 0.15)
-  ###      
-  ###      p <- p +
-  ###        geom_text(data = letter_pos,
-  ###                  aes(x = Structural.subgraph, y = y_position_letters, label = letter),
-  ###                  size = 4, color = "black", fontface = "bold", inherit.aes = FALSE) +
-  ###        coord_cartesian(ylim = c(global_min - (y_range * 0.05),
-  ###                                 y_position_letters + (y_range * 0.05)))
-  ###    }
-  ###  }
-  ###}
-  
-  ggsave(file.path(outdir, paste0(file_prefix, "_by_cluster_ALL.pdf")),
+    ggsave(file.path(outdir, paste0(file_prefix, "_by_cluster_ALL.pdf")),
          plot = p, width = 24, height = 8, device = cairo_pdf)
   
   return(p)
@@ -910,7 +849,7 @@ if (!is.null(stats_cluster_charge)) {
   ###}
 }
 
-# Plot ALL clusters but indicate which were used in stats
+# Plot ALL clusters, not just the ones used in stats
 p14 <- make_cluster_boxplot(cluster_data, "Net.Charge", "Net charge", "netcharge",
                             outdir, stats_cluster_charge, clusters_for_stats)
 p14
