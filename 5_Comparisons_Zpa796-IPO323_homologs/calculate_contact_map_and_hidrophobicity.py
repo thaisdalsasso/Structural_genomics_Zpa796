@@ -6,10 +6,8 @@ from Bio.PDB import PDBParser
 import matplotlib as mpl
 from matplotlib.colors import LinearSegmentedColormap
 
-# Set Arial as the default font
 mpl.rcParams['font.family'] = 'Arial'
 
-# Define custom colors for annotations
 hydro_cmap = LinearSegmentedColormap.from_list("hydro", ["darkcyan", "white", "darkgoldenrod"])
 
 # Hydrophobicity 
@@ -53,7 +51,7 @@ def plot_contact_map_with_annotations(distances, protein1, protein2,
 
     fig, ax = plt.subplots(figsize=(12, 12))
 
-    # Debugging info
+    # Debugging
     print(f"Protein 1: {protein1}, Length: {len(protein1_hydro)}")
     print(f"Protein 2: {protein2}, Length: {len(protein2_hydro)}")
     print(f"Hydrophobicity Protein 1: {protein1_hydro}")
