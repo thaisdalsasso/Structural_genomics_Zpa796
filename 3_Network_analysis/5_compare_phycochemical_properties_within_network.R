@@ -21,6 +21,29 @@ get_significance <- function(p_value) {
   else return("ns")
 }
 
+calculate_cliffs_delta <- function(vals1, vals2) {
+  vals1 <- vals1[!is.na(vals1)]
+  vals2 <- vals2[!is.na(vals2)]
+  
+  if (length(vals1) == 0L || length(vals2) == 0L) {
+    return(NA_real_)
+  }
+  
+  pairwise_differences <- outer(vals1, vals2, "-")
+  (sum(pairwise_differences > 0) - sum(pairwise_differences < 0)) /
+    (length(vals1) * length(vals2))
+}
+
+classify_cliffs_delta <- function(delta) {
+  dplyr::case_when(
+    is.na(delta) ~ NA_character_,
+    abs(delta) < 0.147 ~ "negligible",
+    abs(delta) < 0.33 ~ "small",
+    abs(delta) < 0.474 ~ "medium",
+    TRUE ~ "large"
+  )
+}
+
 
 letters_from_pairwise <- function(pair_df, data_df,
                                   group_col = "Group",
@@ -324,9 +347,9 @@ run_group_stats <- function(df, feature_col, feature_label, file_prefix, outdir)
   posthoc <- as.data.frame(posthoc)
   posthoc$p.adj <- as.numeric(posthoc$p.adj)
   
-  # Cohen's d for each pairwise comparison
+  # Cliff's delta for each pairwise comparison
   group_levels <- levels(df_feat$Group)
-  posthoc$cohens_d <- NA
+  posthoc$cliffs_delta <- NA_real_
   
   for (i in 1:nrow(posthoc)) {
     g1 <- as.character(posthoc$group1[i])
@@ -336,19 +359,10 @@ run_group_stats <- function(df, feature_col, feature_label, file_prefix, outdir)
       vals1 <- df_feat$value[df_feat$Group == g1]
       vals2 <- df_feat$value[df_feat$Group == g2]
       
-      # Pooled standard deviation
-      n1 <- length(vals1)
-      n2 <- length(vals2)
-      sd1 <- sd(vals1, na.rm = TRUE)
-      sd2 <- sd(vals2, na.rm = TRUE)
-      pooled_sd <- sqrt(((n1 - 1) * sd1^2 + (n2 - 1) * sd2^2) / (n1 + n2 - 2))
-      
-      mean_diff <- mean(vals1, na.rm = TRUE) - mean(vals2, na.rm = TRUE)
-      cohens_d <- mean_diff / pooled_sd
-      
-      posthoc$cohens_d[i] <- cohens_d
+      posthoc$cliffs_delta[i] <- calculate_cliffs_delta(vals1, vals2)
     }
   }
+  posthoc$cliffs_delta_magnitude <- classify_cliffs_delta(posthoc$cliffs_delta)
   
   descriptive_stats <- df_feat %>%
     group_by(Group) %>%
@@ -723,9 +737,9 @@ run_cluster_stats <- function(df, feature_col, feature_label) {
                                   p.adjust.method = "BH")
     posthoc <- as.data.frame(posthoc)
     
-    # Cohen's d for each pairwise comparison
+    # Cliff's delta for each pairwise comparison
     cluster_levels <- levels(df_feat$Structural.subgraph)
-    posthoc$cohens_d <- NA
+    posthoc$cliffs_delta <- NA_real_
     
     for (i in 1:nrow(posthoc)) {
       g1 <- as.character(posthoc$group1[i])
@@ -735,20 +749,10 @@ run_cluster_stats <- function(df, feature_col, feature_label) {
         vals1 <- df_feat$value[df_feat$Structural.subgraph == g1]
         vals2 <- df_feat$value[df_feat$Structural.subgraph == g2]
         
-        # Calculate pooled standard deviation
-        n1 <- length(vals1)
-        n2 <- length(vals2)
-        sd1 <- sd(vals1, na.rm = TRUE)
-        sd2 <- sd(vals2, na.rm = TRUE)
-        pooled_sd <- sqrt(((n1 - 1) * sd1^2 + (n2 - 1) * sd2^2) / (n1 + n2 - 2))
-        
-        # Calculate Cohen's d
-        mean_diff <- mean(vals1, na.rm = TRUE) - mean(vals2, na.rm = TRUE)
-        cohens_d <- mean_diff / pooled_sd
-        
-        posthoc$cohens_d[i] <- cohens_d
+        posthoc$cliffs_delta[i] <- calculate_cliffs_delta(vals1, vals2)
       }
     }
+    posthoc$cliffs_delta_magnitude <- classify_cliffs_delta(posthoc$cliffs_delta)
     
     # Count significant comparisons
     n_sig <- sum(posthoc$p.adj < 0.05, na.rm = TRUE)
@@ -1013,5 +1017,4 @@ p_size
 
 cat("\n\n\n")
 cat("Done!!\n")
-
 

@@ -3,7 +3,6 @@ library(ggplot2)
 library(tidyr)
 library(colorspace)
 library(rstatix)
-library(effsize)
 library(multcompView)
 library(extrafont)
 
@@ -27,6 +26,48 @@ df_melted$Method <- factor(df_melted$Method,
                            labels = c("ESMFold", "AlphaFold2"))
 
 colors <- c("ESMFold" = "#2F79B5", "AlphaFold2" = "#C13639")
+
+cliff_delta_two_group <- function(data, value_col, group_col) {
+  df_eff <- data %>%
+    dplyr::select(value = dplyr::all_of(value_col), group = dplyr::all_of(group_col)) %>%
+    tidyr::drop_na(value, group)
+  
+  group_levels <- unique(as.character(df_eff$group))
+  if (length(group_levels) != 2L) {
+    return(data.frame(
+      group1 = NA_character_,
+      group2 = NA_character_,
+      cliffs_delta = NA_real_,
+      magnitude = NA_character_
+    ))
+  }
+  
+  vals1 <- df_eff$value[as.character(df_eff$group) == group_levels[1]]
+  vals2 <- df_eff$value[as.character(df_eff$group) == group_levels[2]]
+  
+  if (length(vals1) == 0L || length(vals2) == 0L) {
+    delta <- NA_real_
+  } else {
+    pairwise_differences <- outer(vals1, vals2, "-")
+    delta <- (sum(pairwise_differences > 0) - sum(pairwise_differences < 0)) /
+      (length(vals1) * length(vals2))
+  }
+  
+  magnitude <- dplyr::case_when(
+    is.na(delta) ~ NA_character_,
+    abs(delta) < 0.147 ~ "negligible",
+    abs(delta) < 0.33 ~ "small",
+    abs(delta) < 0.474 ~ "medium",
+    TRUE ~ "large"
+  )
+  
+  data.frame(
+    group1 = group_levels[1],
+    group2 = group_levels[2],
+    cliffs_delta = delta,
+    magnitude = magnitude
+  )
+}
 
 
 ##################################################################################################
@@ -71,11 +112,11 @@ pLDDT_normality
 if (any(pLDDT_normality$p < 0.05)) {
   # Non-parametric test
   pLDDT_test <- wilcox_test(pLDDT ~ Method, data = pLDDT_long)
-  pLDDT_effect_size <- effsize::cohen.d(pLDDT ~ Method, data = pLDDT_long, paired = FALSE)
+  pLDDT_effect_size <- cliff_delta_two_group(pLDDT_long, "pLDDT", "Method")
 } else {
   # Parametric test
   pLDDT_test <- t_test(pLDDT ~ Method, data = pLDDT_long)
-  pLDDT_effect_size <- effsize::cohen.d(pLDDT ~ Method, data = pLDDT_long, paired = FALSE)
+  pLDDT_effect_size <- cliff_delta_two_group(pLDDT_long, "pLDDT", "Method")
 }
 
 pLDDT_test
@@ -162,7 +203,7 @@ unique_length_categories <- unique(pLDDT_long$Length_Category)
 for(length_category in unique_length_categories) {
   data_filtered <- filter(pLDDT_long, Length_Category == length_category)
   test_result <- wilcox_test(pLDDT ~ Method, data = data_filtered)
-  effect_size <- effsize::cohen.d(filter(pLDDT_long, Length_Category == length_category)$pLDDT ~ filter(pLDDT_long, Length_Category == length_category)$Method, paired = FALSE)
+  effect_size <- cliff_delta_two_group(data_filtered, "pLDDT", "Method")
   pLDDT_comparisons[[length_category]] <- list(test_result = test_result, effect_size = effect_size)
 }
 
@@ -570,4 +611,3 @@ plot_RMSD_by_length
 
 ggsave("Zpa796_AF2-ESMFold_plot_mean_RMSD.pdf", plot = plot_mean_RMSD, device = cairo_pdf, width = 5, height = 6)
 ggsave("Zpa796_AF2-ESMFold_plot_RMSD_by_length.pdf", plot = plot_RMSD_by_length, device = cairo_pdf, width = 8, height = 6)
-
