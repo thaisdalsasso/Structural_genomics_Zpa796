@@ -59,7 +59,7 @@ secretome_data$Protein_Size_Group <- factor(secretome_data$Protein_Size_Group,
 protein_size_barplot <- ggplot(secretome_data, aes(x = Protein_Size_Group, fill = pLDDT)) +
   geom_bar(width = 0.7) +
   labs(title = "",
-    x = "Mature protein legnth", y = "Number of proteins") +
+    x = "Mature protein length", y = "Number of proteins") +
   scale_fill_manual(values = c("<50" = "darkorange", "50-70" = "gold", "70-90" = "dodgerblue", ">90" = "darkblue", "NA" = "grey")) +
   theme_classic() +
   theme(
@@ -89,7 +89,7 @@ secretome_data$AM.prediction..AF2.AMAPEC. <- factor(secretome_data$AM.prediction
 antimicrobial_barplot <- ggplot(secretome_data, aes(x = Protein_Size_Group, fill = AM.prediction..AF2.AMAPEC.)) +
   geom_bar(width = 0.7) +
   labs(title = "",
-    x = "Mature protein legnth", y = "Number of proteins") +
+    x = "Mature protein length", y = "Number of proteins") +
   scale_fill_manual(values = c("Antimicrobial" = "#2171B5", "Non-antimicrobial" = "#41AB5D", "NA" = "grey")) +
   theme_classic() +
   theme(
@@ -132,7 +132,7 @@ secretome_data$Protein_Size_Group <- factor(secretome_data$Protein_Size_Group,
 protein_size_barplot <- ggplot(secretome_data, aes(x = Protein_Size_Group, fill = pLDDT)) +
   geom_bar(width = 0.7) +
   labs(title = "",
-    x = "Mature protein legnth", y = "Number of proteins") +
+    x = "Mature protein length", y = "Number of proteins") +
   scale_fill_manual(values = c("<50" = "darkorange", "50-70" = "gold", "70-90" = "dodgerblue", ">90" = "darkblue", "NA" = "grey")) +
   theme_classic() +
   theme(

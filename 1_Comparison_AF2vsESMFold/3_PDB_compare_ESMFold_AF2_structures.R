@@ -106,7 +106,13 @@ plot_mean_RMSD <- ggplot(tm_data, aes(x = Method, y = RMSD, fill = Method)) +
 plot_mean_TMscore
 plot_mean_RMSD
 
-
+tm_data %>%
+  group_by(Method) %>%
+  summarise(
+    mean_TM_Score = mean(TM_Score, na.rm = TRUE),
+    mean_RMSD = mean(RMSD, na.rm = TRUE)
+  )
+  
 #########################################
 #Test for normality to decide upon the statistical test
 
