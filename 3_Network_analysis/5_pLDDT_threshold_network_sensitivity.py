@@ -9,26 +9,13 @@ from scipy.stats import fisher_exact
 from statsmodels.stats.multitest import multipletests
 
 
-TM_SCORES = Path(
-    "/Users/dalsasso/Desktop/Posdoc/CAU/network_analysis/Zpa796/tm-score_network/"
-    "pairwise_TM0.5/Zpa796_tm-scores_all-vs-all_summary.txt"
-)
-ANNOTATION = Path(
-    "/Users/dalsasso/Desktop/Posdoc/CAU/annotations/table-annot_backup/"
-    "Zpa796_secretome-annotation_12-08-24.tsv"
-)
-ORIGINAL_GRAPH = Path(
-    "/Users/dalsasso/Desktop/Posdoc/CAU/network_analysis/Zpa796/tm-score_network/"
-    "pairwise_TM0.5/Zpa796_tm-scores_network.graphml"
-)
-OUTDIR = Path(
-    "/Users/dalsasso/Desktop/Posdoc/CAU/network_analysis/Zpa796/tm-score_network/"
-    "pairwise_TM0.5/pLDDT_threshold_sensitivity_results"
-)
-
+TM_SCORES = Path("Zpa796_tm-scores_all-vs-all_summary.txt")
+ANNOTATION = Path("Zpa796_secretome_metadata.tsv")
+ORIGINAL_GRAPH = Path("Zpa796_tm-scores_network.graphml")
+OUTDIR = Path("pLDDT_threshold_sensitivity_results")
 
 TM_THRESHOLD = 0.5
-THRESHOLDS = list(range(50, 100, 5))
+THRESHOLDS = list(range(50, 100, 5)) #(min, max, interval)
 FIGURE_SIZE = (8, 6)
 LINE_AXIS_LABEL_SIZE = 18
 LINE_TICK_SIZE = 16
