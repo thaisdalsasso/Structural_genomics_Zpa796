@@ -1,3 +1,10 @@
+"""
+This script repeats the network and enrichment analyses across a range of pLDDT
+thresholds to test the robustness of the structural similarity network. Newly
+defined clusters are mapped onto the original network before downstream
+calculations.
+"""
+
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -7,6 +14,7 @@ import pandas as pd
 import seaborn as sns
 from scipy.stats import fisher_exact
 from statsmodels.stats.multitest import multipletests
+
 
 # Define files:
 TM_SCORES = Path("Zpa796_tm-scores_all-vs-all_summary.txt")
