@@ -8,12 +8,13 @@ import seaborn as sns
 from scipy.stats import fisher_exact
 from statsmodels.stats.multitest import multipletests
 
-
+# Define files:
 TM_SCORES = Path("Zpa796_tm-scores_all-vs-all_summary.txt")
 ANNOTATION = Path("Zpa796_secretome_metadata.tsv")
 ORIGINAL_GRAPH = Path("Zpa796_tm-scores_network.graphml")
 OUTDIR = Path("pLDDT_threshold_sensitivity_results")
 
+# Define parameters:
 TM_THRESHOLD = 0.5
 THRESHOLDS = list(range(50, 100, 5)) #(min, max, interval)
 FIGURE_SIZE = (8, 6)
@@ -21,7 +22,7 @@ LINE_AXIS_LABEL_SIZE = 18
 LINE_TICK_SIZE = 16
 LINE_LEGEND_SIZE = 16
 
-
+# Plot settings:
 plt.rcParams.update(
     {
         "font.family": "Arial",
@@ -36,14 +37,13 @@ plt.rcParams.update(
     }
 )
 
-
+##################################################################
 def map_effector_status(value):
     if pd.isna(value):
         return np.nan
     if "Non-effector" in str(value):
         return "Non-effector"
     return "Effector"
-
 
 def read_qualifying_edges(path):
     pair_scores = {}
@@ -59,13 +59,11 @@ def read_qualifying_edges(path):
                 continue
             pair = tuple(sorted((protein1, protein2)))
             pair_scores.setdefault(pair, []).append(score)
-
     return {
         pair: max(scores)
         for pair, scores in pair_scores.items()
         if len(scores) == 2 and all(score >= TM_THRESHOLD for score in scores)
     }
-
 
 def build_network(edges, allowed_proteins):
     graph = nx.Graph()
@@ -74,13 +72,11 @@ def build_network(edges, allowed_proteins):
             graph.add_edge(protein1, protein2, weight=score)
     return graph
 
-
 def sorted_components(graph):
     return sorted(
         nx.connected_components(graph),
         key=lambda component: (-len(component), sorted(component)[0]),
     )
-
 
 def component_assignments(graph, annotation, rebuilt=True):
     rows = []
@@ -113,10 +109,8 @@ def component_assignments(graph, annotation, rebuilt=True):
                 )
     return pd.DataFrame(rows)
 
-
 def enrichment_input(annotation, assignments):
     return annotation.reset_index(drop=True).merge(assignments, on="Protein ID", how="inner")
-
 
 def run_enrichment(data, group_column, status_column, positive_label):
     filtered = data[[group_column, status_column]].dropna()
@@ -158,7 +152,6 @@ def run_enrichment(data, group_column, status_column, positive_label):
     results["Significant"] = results["Adjusted P-value"] < 0.05
     return results.sort_values(["Adjusted P-value", "P-value"])
 
-
 def run_enrichments(annotation, assignments):
     data = enrichment_input(annotation, assignments)
     analyses = {
@@ -179,7 +172,6 @@ def run_enrichments(annotation, assignments):
         results[analysis] = result
     return results
 
-
 def original_effector_enriched_groups(original_graph, annotation):
     assignments = component_assignments(original_graph, annotation, rebuilt=False)
     results = run_enrichments(annotation, assignments)["Effector"]
@@ -188,7 +180,6 @@ def original_effector_enriched_groups(original_graph, annotation):
         results.loc[results["Significant"], "Parent structural subgraph"].unique()
     )
 
-
 def original_members_by_group(original_groups, original_graph, annotation):
     original_nodes = set(original_graph.nodes())
     members = {}
@@ -196,7 +187,6 @@ def original_members_by_group(original_groups, original_graph, annotation):
         group_members = set(annotation.index[annotation["Structural subgraph"] == group])
         members[group] = group_members & original_nodes
     return members
-
 
 def cluster_jaccard_rows(original_members, graph, threshold):
     rebuilt_components = list(nx.connected_components(graph))
@@ -226,7 +216,6 @@ def cluster_jaccard_rows(original_members, graph, threshold):
             }
         )
     return rows
-
 
 def plot_normalized_network_retention(summary, original_graph, output_stem):
     fig, axis = plt.subplots(figsize=FIGURE_SIZE)
@@ -284,7 +273,6 @@ def plot_enriched_clusters(summary, output_stem):
     fig.tight_layout()
     fig.savefig(output_stem.with_suffix(".pdf"))
     plt.close(fig)
-
 
 def plot_member_retention_heatmap(stability, significant, output_stem):
     matrix = stability.pivot(
@@ -347,7 +335,6 @@ def plot_member_retention_heatmap(stability, significant, output_stem):
     colorbar.ax.tick_params(labelsize=18)
     fig.savefig(output_stem.with_suffix(".pdf"))
     plt.close(fig)
-
 
 def main():
     OUTDIR.mkdir(parents=True, exist_ok=True)
@@ -422,7 +409,6 @@ def main():
 
     print("Original effector-enriched clusters:", ", ".join(enriched_groups))
     print(summary.to_string(index=False))
-
 
 if __name__ == "__main__":
     main()
