@@ -2,7 +2,7 @@
 
 root_dir="./phylogeny_homologs"
 input_multifasta="${root_dir}/G.12/G.12_homologs_Zymospp.fasta"
-outdir="${root_dir}/phylogeny/G.12"
+outdir="${root_dir}/phylogeny_Zymospp/G.12"
 
 mkdir -p "${outdir}"
 
