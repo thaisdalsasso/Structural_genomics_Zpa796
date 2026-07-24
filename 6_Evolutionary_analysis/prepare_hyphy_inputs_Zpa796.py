@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 '''
-Prepares codon-aware alignments from  mature-protein MSAs, retrieves the matching mature CDS records,
-threads codons through the protein alignments, and writes trimmed codon-aware alignments ready for HyPhy.
-'''
 
+Prepares codon-aware alignments from protein MSAs, retrieves the matching CDS records,
+threads codons through the protein alignments, and writes trimmed codon-aware alignments ready for HyPhy.
+
+'''
 
 from __future__ import annotations
 
