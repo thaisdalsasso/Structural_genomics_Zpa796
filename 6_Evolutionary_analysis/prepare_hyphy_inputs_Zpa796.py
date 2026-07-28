@@ -14,6 +14,7 @@ import re
 import textwrap
 from pathlib import Path
 
+### Settings
 
 root = Path("/path2/phylogeny_homologs")
 source_root = Path("/path2/structural_clusters_MSAs")
@@ -33,6 +34,8 @@ structural_clusters = {
     },
 }
 
+
+############################################################
 genetic_code = {
     "TTT": "F", "TTC": "F", "TTA": "L", "TTG": "L",
     "TCT": "S", "TCC": "S", "TCA": "S", "TCG": "S",
