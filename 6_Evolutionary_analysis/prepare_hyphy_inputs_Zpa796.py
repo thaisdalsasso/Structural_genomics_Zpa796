@@ -15,25 +15,25 @@ import textwrap
 from pathlib import Path
 
 
-ROOT = Path("/path2/phylogeny_homologs")
-SOURCE_ROOT = Path("/path2/structural_clusters_MSAs")
-MATURE_CDS_FASTA = Path("/data/References/cds/Zpa796_mature-CDS.secretome.fasta")
-OUTDIR = ROOT / "hyphy_analysis_Zpa796"
+root = Path("/path2/phylogeny_homologs")
+source_root = Path("/path2/structural_clusters_MSAs")
+mature_CDS_seqs = Path("/data/References/cds/Zpa796_mature-CDS.secretome.fasta")
+outdir = root / "hyphy_analysis_Zpa796"
 
-CLUSTERS = {
+structural_clusters = {
     "G.04": {
-        "mature_protein": SOURCE_ROOT / "G.04/mafft-linsi/G.04_mature.fasta",
-        "protein_alignment": SOURCE_ROOT / "G.04/mafft-linsi/G.04_mature_mafft-linsi.fasta",
-        "trimmed_protein_alignment": SOURCE_ROOT / "G.04/mafft-linsi/G.04_mature_mafft-linsi_trimmed.fasta",
+        "mature_protein": source_root / "G.04/mafft-linsi/G.04_mature.fasta",
+        "protein_alignment": source_root / "G.04/mafft-linsi/G.04_mature_mafft-linsi.fasta",
+        "trimmed_protein_alignment": source_root / "G.04/mafft-linsi/G.04_mature_mafft-linsi_trimmed.fasta",
     },
     "G.12": {
-        "mature_protein": SOURCE_ROOT / "G.12/mafft-linsi/G.12_mature.fasta",
-        "protein_alignment": SOURCE_ROOT / "G.12/mafft-linsi/G.12_mature_mafft-linsi.fasta",
-        "trimmed_protein_alignment": SOURCE_ROOT / "G.12/mafft-linsi/G.12_mature_mafft-linsi_trimmed.fasta",
+        "mature_protein": source_root / "G.12/mafft-linsi/G.12_mature.fasta",
+        "protein_alignment": source_root / "G.12/mafft-linsi/G.12_mature_mafft-linsi.fasta",
+        "trimmed_protein_alignment": source_root / "G.12/mafft-linsi/G.12_mature_mafft-linsi_trimmed.fasta",
     },
 }
 
-GENETIC_CODE = {
+genetic_code = {
     "TTT": "F", "TTC": "F", "TTA": "L", "TTG": "L",
     "TCT": "S", "TCC": "S", "TCA": "S", "TCG": "S",
     "TAT": "Y", "TAC": "Y", "TAA": "*", "TAG": "*",
@@ -53,7 +53,7 @@ GENETIC_CODE = {
 }
 
 # Correct the single GCG entry after keeping the table compact above.
-GENETIC_CODE["GCG"] = "A"
+genetic_code["GCG"] = "A"
 
 
 def read_fasta(path: Path) -> dict[str, str]:
@@ -88,13 +88,13 @@ def write_fasta(path: Path, records: dict[str, str]) -> None:
 
 def clean_cds(sequence: str) -> str:
     cds = re.sub(r"[^A-Za-z]", "", sequence).upper().replace("U", "T")
-    if len(cds) >= 3 and GENETIC_CODE.get(cds[-3:], "X") == "*":
+    if len(cds) >= 3 and genetic_code.get(cds[-3:], "X") == "*":
         cds = cds[:-3]
     return cds
 
 
 def translate(cds: str) -> str:
-    return "".join(GENETIC_CODE.get(cds[i:i + 3], "X") for i in range(0, len(cds) - 2, 3))
+    return "".join(genetic_code.get(cds[i:i + 3], "X") for i in range(0, len(cds) - 2, 3))
 
 
 def thread_cds(protein_alignment: dict[str, str], cds_records: dict[str, str]) -> dict[str, str]:
@@ -150,12 +150,12 @@ def trim_codon_alignment(codon_alignment: dict[str, str], kept_columns: list[int
 
 
 def main() -> None:
-    OUTDIR.mkdir(parents=True, exist_ok=True)
-    all_mature_cds = {seq_id: clean_cds(seq) for seq_id, seq in read_fasta(MATURE_CDS_FASTA).items()}
+    outdir.mkdir(parents=True, exist_ok=True)
+    all_mature_cds = {seq_id: clean_cds(seq) for seq_id, seq in read_fasta(mature_CDS_seqs).items()}
     summary_rows: list[dict[str, object]] = []
 
-    for cluster, paths in CLUSTERS.items():
-        cluster_dir = OUTDIR / cluster
+    for cluster, paths in structural_clusters.items():
+        cluster_dir = outdir / cluster
         cluster_dir.mkdir(parents=True, exist_ok=True)
 
         mature_proteins = read_fasta(paths["mature_protein"])
@@ -209,7 +209,7 @@ def main() -> None:
         })
         print(f"{cluster}: prepared {len(mature_proteins)} CDS/protein sequences")
 
-    with (OUTDIR / "Zpa796_hyphy_input_summary.tsv").open("w", newline="") as handle:
+    with (outdir / "Zpa796_hyphy_input_summary.tsv").open("w", newline="") as handle:
         writer = csv.DictWriter(handle, delimiter="\t", fieldnames=list(summary_rows[0].keys()))
         writer.writeheader()
         writer.writerows(summary_rows)
