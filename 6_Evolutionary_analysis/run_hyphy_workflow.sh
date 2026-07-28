@@ -4,6 +4,7 @@ root_dir="/path2/phylogeny_homologs"
 work_dir="${root_dir}/Zpa796_copies"
 
 
+#########################################################
 # Prepare data input for HyPhy
 python3.9 "${root_dir}/prepare_hyphy_inputs_Zpa796.py"
 
