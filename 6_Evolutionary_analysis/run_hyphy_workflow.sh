@@ -13,6 +13,7 @@ for cluster in "G.04" "G.12"; do
   alignment="${cluster_dir}/${cluster}_Zpa796_mature_codon_alignment_trimmed_gappyout.fasta"
   tree_prefix="${cluster_dir}/${cluster}_Zpa796_mature_codon_iqtree"
 
+# Run ML tree for codon-aware alignment
   echo "Inferring nucleotide ML tree for ${cluster}"
   iqtree2 \
     -s "${alignment}" \
@@ -21,6 +22,7 @@ for cluster in "G.04" "G.12"; do
     --runs 10 \
     -pre "${tree_prefix}"
 
+# Run MEME method in HyPhy
   echo "Running HyPhy MEME for ${cluster}"
   mkdir -p "${cluster_dir}/hyphy_MEME"
   hyphy meme \
@@ -31,6 +33,7 @@ for cluster in "G.04" "G.12"; do
     --output "${cluster_dir}/hyphy_MEME/${cluster}_Zpa796_MEME.json" \
     2>&1 | tee "${cluster_dir}/hyphy_MEME/${cluster}_Zpa796_MEME.log"
 
+# Run FEL method in HyPhy
   echo "Running HyPhy FEL for ${cluster}"
   mkdir -p "${cluster_dir}/hyphy_FEL"
   hyphy fel \
